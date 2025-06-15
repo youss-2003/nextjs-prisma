@@ -1,11 +1,31 @@
+// app/api/employees/route.ts
 import { prisma } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('query') || ''
+    const department = searchParams.get('department') || undefined
+    const status = searchParams.get('status') || undefined
+
     const employees = await prisma.employee.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              { firstName: { contains: query } },
+              { lastName: { contains: query } },
+              { email: { contains: query } },
+            ],
+          },
+          department ? { department: { equals: department } } : {},
+          status ? { status: { equals: status } } : {},
+        ],
+      },
       orderBy: { hiredAt: 'desc' },
     })
+
     return NextResponse.json(employees)
   } catch (error) {
     console.error('Failed to fetch employees:', error)
@@ -16,6 +36,7 @@ export async function GET() {
   }
 }
 
+// Keep your existing POST endpoint exactly as is
 export async function POST(request: Request) {
   try {
     const body = await request.json()
