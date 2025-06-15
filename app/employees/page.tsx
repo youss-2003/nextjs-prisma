@@ -46,7 +46,7 @@ export default async function EmployeesPage() {
             <p className="text-sm text-muted-foreground">Manage your team members</p>
           </div>
           <Button asChild>
-            <Link href="/employees/new">
+            <Link href="/employees/add">
               <Plus className="mr-2 h-4 w-4" />
               Add Employee
             </Link>
@@ -72,23 +72,31 @@ export default async function EmployeesPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {employees.map((employee) => (
             <Card key={employee.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                      {employee.firstName[0]}
-                      {employee.lastName[0]}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">
-                        {employee.firstName} {employee.lastName}
-                      </CardTitle>
-                      <CardDescription>{employee.position}</CardDescription>
-                    </div>
-                  </div>
-                  <Badge className={getStatusColor(employee.status)}>{employee.status}</Badge>
-                </div>
-              </CardHeader>
+             <CardHeader className="pb-3">
+  <div className="flex items-center justify-between">
+    <div className="flex items-center space-x-3">
+      {employee.photoUrl ? (
+        <img
+          src={employee.photoUrl}
+          alt={`${employee.firstName} ${employee.lastName}`}
+          className="w-12 h-12 rounded-full object-cover"
+        />
+      ) : (
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+          {employee.firstName[0]}
+          {employee.lastName[0]}
+        </div>
+      )}
+      <div>
+        <CardTitle className="text-lg">
+          {employee.firstName} {employee.lastName}
+        </CardTitle>
+        <CardDescription>{employee.position}</CardDescription>
+      </div>
+    </div>
+    <Badge className={getStatusColor(employee.status)}>{employee.status}</Badge>
+  </div>
+</CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Email</p>
@@ -104,7 +112,7 @@ export default async function EmployeesPage() {
                 </div>
                 <div className="flex justify-between pt-3 border-t">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/employees/${employee.id}`}>
+                    <Link href={`/employees/employee/${employee.id}`}>
                       <Eye className="mr-1 h-3 w-3" />
                       View
                     </Link>

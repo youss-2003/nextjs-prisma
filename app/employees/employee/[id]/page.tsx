@@ -1,90 +1,212 @@
-import { prisma } from '@/lib/db';
-import { notFound } from 'next/navigation';
-import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { ArrowLeft, Edit, Mail, Phone, Calendar, DollarSign, Building, User, CreditCard } from "lucide-react"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { prisma } from "@/lib/db"
 
-interface Props {
-  params: {
-    id: string;
-  };
+// Helper functions (same as yours)
+const getStatusColor = (status: string) => {
+    switch (status) {
+        case "active":
+            return "bg-green-100 text-green-800"
+        case "inactive":
+            return "bg-yellow-100 text-yellow-800"
+        case "terminated":
+            return "bg-red-100 text-red-800"
+        default:
+            return "bg-gray-100 text-gray-800"
+    }
 }
 
-export default async function EmployeeDetails({ params }: Props) {
-  const { id } = params;
+const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    })
+}
 
-  const employee = await prisma.employee.findUnique({
-    where: { id: parseInt(id) },
-  });
+//async because we fetch data server-side
+export default async function EmployeeDetailsPage({ params }: { params: { id: string } }) {
+    const employee = await prisma.employee.findUnique({
+        where: { id: Number(params.id) },
+    })
 
-  if (!employee) return notFound();
+    if (!employee) {
+        notFound()
+    }
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-2xl max-w-2xl w-full p-6 space-y-6">
-        <div className="flex items-center gap-4">
-          <img
-            src={employee.photoUrl || `https://i.pravatar.cc/150?u=${employee.email}`}
-            alt={`${employee.firstName} ${employee.lastName}`}
-            className="w-24 h-24 rounded-full object-cover border"
-          />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {employee.firstName} {employee.lastName}
-            </h1>
-            <p className="text-gray-500">{employee.position}</p>
-            <span className={`inline-block px-3 py-1 mt-1 text-sm rounded-full ${
-              employee.status === 'active'
-                ? 'bg-green-100 text-green-700'
-                : employee.status === 'inactive'
-                ? 'bg-yellow-100 text-yellow-700'
-                : 'bg-red-100 text-red-700'
-            }`}>
-              {employee.status}
-            </span>
-          </div>
+    return (
+        <div className="flex flex-col">
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1" />
+                <div className="flex flex-1 items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href="/employees">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Back to Employees
+                            </Link>
+                        </Button>
+                        <div>
+                            <h1 className="text-lg font-semibold">
+                                {employee.firstName} {employee.lastName}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">{employee.position}</p>
+                        </div>
+                    </div>
+                    <Button asChild>
+                        <Link href={`/employees/${employee.id}/edit`}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Employee
+                        </Link>
+                    </Button>
+                </div>
+            </header>
+
+            <div className="flex-1 p-6">
+                <div className="max-w-4xl mx-auto space-y-6">
+                    {/* Profile Header */}
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center space-x-6">
+                                {employee.photoUrl ? (
+                                    <img
+                                        src={employee.photoUrl}
+                                        alt={`${employee.firstName} ${employee.lastName}`}
+                                        className="w-20 h-20 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                                        {employee.firstName[0]}
+                                        {employee.lastName[0]}
+                                    </div>
+                                )}
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <h2 className="text-2xl font-bold">
+                                            {employee.firstName} {employee.lastName}
+                                        </h2>
+                                        <Badge className={getStatusColor(employee.status)}>{employee.status}</Badge>
+                                    </div>
+                                    <p className="text-lg text-muted-foreground mb-1">{employee.position}</p>
+                                    <p className="text-sm text-muted-foreground">{employee.department} Department</p>
+                                </div>
+                            </div>
+                        </CardHeader>
+
+                    </Card>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* Contact Information */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <User className="h-5 w-5" />
+                                    Contact Information
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <Mail className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Email</p>
+                                        <p className="font-medium">{employee.email}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Phone className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Phone</p>
+                                        <p className="font-medium">{employee.phoneNumber || "N/A"}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">ID Card Number</p>
+                                        <p className="font-medium">{employee.idCardNumber}</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Employment Details */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Building className="h-5 w-5" />
+                                    Employment Details
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <User className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Position</p>
+                                        <p className="font-medium">{employee.position}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Building className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Department</p>
+                                        <p className="font-medium">{employee.department || "N/A"}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Salary</p>
+                                        <p className="font-medium">${employee.salary.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Hired Date</p>
+                                        <p className="font-medium">{formatDate(employee.hiredAt)}</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Notes */}
+                    {employee.notes && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Notes</CardTitle>
+                                <CardDescription>Internal notes and comments</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm leading-relaxed">{employee.notes}</p>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* System Information */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>System Information</CardTitle>
+                            <CardDescription>Record creation and modification details</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Created At</p>
+                                <p className="font-medium">{formatDate(employee.createdAt)}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Last Updated</p>
+                                <p className="font-medium">{formatDate(employee.updatedAt)}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-800">
-          <div>
-            <p className="font-medium text-gray-600">Email</p>
-            <p>{employee.email}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">Phone</p>
-            <p>{employee.phoneNumber || 'N/A'}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">ID Card Number</p>
-            <p>{employee.idCardNumber}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">Department</p>
-            <p>{employee.department || 'Not assigned'}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">Salary</p>
-            <p>${employee.salary.toLocaleString()}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">Hired At</p>
-            <p>{new Date(employee.hiredAt).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">Created At</p>
-            <p>{new Date(employee.createdAt).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <p className="font-medium text-gray-600">Last Updated</p>
-            <p>{new Date(employee.updatedAt).toLocaleDateString()}</p>
-          </div>
-        </div>
-
-        {employee.notes && (
-          <div className="mt-4">
-            <p className="font-medium text-gray-600">Notes</p>
-            <p className="text-gray-700">{employee.notes}</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    )
 }
