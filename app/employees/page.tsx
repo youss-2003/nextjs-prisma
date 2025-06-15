@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Search, Plus, Edit, Eye } from "lucide-react"
+import { Search, Plus, Edit, Eye, LoaderPinwheel } from "lucide-react"
 import Link from "next/link"
 import { DeleteEmployeeButton } from "@/AppComponents/DeleteEmployee"
 import { Employees } from "../types/types"
@@ -80,7 +80,9 @@ export default function EmployeesPage() {
 
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading employees...</p>
+            <div className="flex items-center justify-center h-full p-6">
+              <LoaderPinwheel className="text-black animate-spin" />
+            </div>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

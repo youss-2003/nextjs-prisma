@@ -13,24 +13,13 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ArrowLeft, LoaderPinwheel, Save } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
+import { Employees } from "@/app/types/types"
 
-interface Employee {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  phoneNumber?: string | null
-  idCardNumber: string
-  position: string
-  department?: string | null
-  salary: number
-  status: string
-  notes?: string | null
-}
+
 
 export default function EditEmployeePage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const [formData, setFormData] = useState<(Employee ) | null>(null)
+  const [formData, setFormData] = useState<(Employees ) | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
 
@@ -39,7 +28,7 @@ export default function EditEmployeePage({ params }: { params: { id: string } })
       try {
         const res = await fetch(`/api/employees/${params.id}`)
         if (!res.ok) throw new Error('Failed to fetch employee')
-        const data: Employee = await res.json()
+        const data: Employees = await res.json()
 
         setFormData({
           ...data,
@@ -55,7 +44,7 @@ export default function EditEmployeePage({ params }: { params: { id: string } })
     fetchEmployee()
   }, [params.id])
 
-  const handleInputChange = (field: keyof Employee | "salary", value: string) => {
+  const handleInputChange = (field: keyof Employees | "salary", value: string) => {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : prev))
   }
 
