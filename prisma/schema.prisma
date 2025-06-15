@@ -17,9 +17,16 @@ model Employee {
   firstName     String
   lastName      String
   email         String   @unique
+  phoneNumber   String?  // Optional
   idCardNumber  String   @unique
   position      String
+  department    String?  // Optional
   salary        Float
   hiredAt       DateTime @default(now())
+  status        String   @default("active") // active, inactive, terminated, etc.
+  photoUrl      String?  // Optional profile photo URL
+  notes         String?  // Optional internal notes
+  createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
