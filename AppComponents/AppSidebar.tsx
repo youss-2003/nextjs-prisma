@@ -29,7 +29,7 @@ const items = [
   },
   {
     title: "Add Employee",
-    url: "/employees/new",
+    url: "/employees/add",
     icon: UserPlus,
   },
   {

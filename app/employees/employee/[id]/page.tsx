@@ -21,8 +21,8 @@ const getStatusColor = (status: string) => {
     }
 }
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -59,7 +59,7 @@ export default async function EmployeeDetailsPage({ params }: { params: { id: st
                         </div>
                     </div>
                     <Button asChild>
-                        <Link href={`/employees/${employee.id}/edit`}>
+                        <Link href={`/employees/employee/${employee.id}/edit`}>
                             <Edit className="mr-2 h-4 w-4" />
                             Edit Employee
                         </Link>

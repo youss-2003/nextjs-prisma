@@ -1,81 +1,97 @@
 "use client"
 
-import React, { useState } from "react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { notFound } from "next/navigation"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { ArrowLeft, LoaderPinwheel, Plus } from "lucide-react"
+import { ArrowLeft, LoaderPinwheel, Save } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 
+interface Employee {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber?: string | null
+  idCardNumber: string
+  position: string
+  department?: string | null
+  salary: number
+  status: string
+  notes?: string | null
+}
 
-export default function NewEmployeePage() {
+export default function EditEmployeePage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    idCardNumber: "",
-    position: "",
-    department: "",
-    salary: "",
-    status: "active",
-    notes: "",
-  })
-
+  const [formData, setFormData] = useState<(Employee ) | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [fetching, setFetching] = useState(true)
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
+  useEffect(() => {
+    async function fetchEmployee() {
+      try {
+        const res = await fetch(`/api/employees/${params.id}`)
+        if (!res.ok) throw new Error('Failed to fetch employee')
+        const data: Employee = await res.json()
+
+        setFormData({
+          ...data,
+          salary: data.salary.toString(),
+        })
+      } catch (err) {
+        console.error(err)
+        notFound()
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchEmployee()
+  }, [params.id])
+
+  const handleInputChange = (field: keyof Employee | "salary", value: string) => {
+    setFormData((prev) => (prev ? { ...prev, [field]: value } : prev))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    if (!formData) return
   
+    setIsLoading(true)
     try {
-      const response = await fetch("/api/employees", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const res = await fetch(`/api/employees/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          salary: parseFloat(formData.salary),
+        }),
       })
   
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to create employee")
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.message || "Failed to update employee")
       }
   
-      toast.success("Employee created successfully!")
-      router.push("/employees")
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create employee")
+      toast.success("Employee updated successfully!")
+      router.push(`/employees/employee/${params.id}`)
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message || "Error updating employee")
     } finally {
       setIsLoading(false)
     }
+  }
+  if (fetching || !formData) {
+    return <div className="flex items-center justify-center h-full p-6">
+    <LoaderPinwheel className="text-black animate-spin" />
+  </div>
   }
 
   return (
@@ -85,15 +101,15 @@ export default function NewEmployeePage() {
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/employees">
+              <Link href={`/employees/employee/${params.id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Employees
+                Back to Details
               </Link>
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">Add New Employee</h1>
+              <h1 className="text-lg font-semibold">Edit Employee</h1>
               <p className="text-sm text-muted-foreground">
-                Create a new employee record
+                {formData.firstName} {formData.lastName}
               </p>
             </div>
           </div>
@@ -102,9 +118,6 @@ export default function NewEmployeePage() {
 
       <div className="flex-1 p-6">
         <div className="max-w-2xl mx-auto">
-          {error && (
-            <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
             <Card>
@@ -147,7 +160,7 @@ export default function NewEmployeePage() {
                   <Label htmlFor="phoneNumber">Phone Number</Label>
                   <Input
                     id="phoneNumber"
-                    value={formData.phoneNumber}
+                    value={formData.phoneNumber || ""}
                     onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                     placeholder="Optional"
                   />
@@ -183,7 +196,7 @@ export default function NewEmployeePage() {
                 <div className="space-y-2">
                   <Label htmlFor="department">Department</Label>
                   <Select
-                    value={formData.department}
+                    value={formData.department || ""}
                     onValueChange={(value) => handleInputChange("department", value)}
                   >
                     <SelectTrigger>
@@ -241,7 +254,7 @@ export default function NewEmployeePage() {
                   <Label htmlFor="notes">Notes</Label>
                   <Textarea
                     id="notes"
-                    value={formData.notes}
+                    value={formData.notes || ""}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
                     placeholder="Internal notes about the employee..."
                     rows={4}
@@ -253,15 +266,15 @@ export default function NewEmployeePage() {
             {/* Form Actions */}
             <div className="flex justify-end space-x-4">
               <Button type="button" variant="outline" asChild>
-                <Link href="/employees">Cancel</Link>
+                <Link href={`/employees/employee/${params.id}`}>Cancel</Link>
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <><LoaderPinwheel className="text-white animate-spin " /></>
                 ) : (
                   <>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Employee
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Changes
                   </>
                 )}
               </Button>
