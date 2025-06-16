@@ -37,7 +37,7 @@ A modern employee management dashboard built with Next.js 15, TypeScript, and Ta
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/employee-management.git
-cd employee-management
+cd nextjs-prisma
 
 # Install dependencies
 npm install
