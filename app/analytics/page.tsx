@@ -2,8 +2,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Construction, Home, BarChart3, Clock, ArrowLeft } from "lucide-react"
+import { Metadata } from "next"
 import Link from "next/link"
 
+export const metadata: Metadata = {
+  title: "Employee Analytics",
+  description: "Modern employee management dashboard",
+}
 export default function AnalyticsPage() {
   return (
     <div className="flex flex-col">

@@ -1,6 +1,11 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Metadata } from "next"
 
+export const metadata: Metadata = {
+  title: "Page Not Found - Employee Management Dashboard",
+  description: "Modern employee management dashboard",
+}
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">

@@ -6,6 +6,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/AppComponents/AppSidebar"
 import { Toaster } from "react-hot-toast"
 
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -24,7 +25,9 @@ export default function RootLayout({
         <SidebarProvider>
           <AppSidebar/>
           <Toaster position="top-right" />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">
+            {children}     
+            </main>
         </SidebarProvider>
       </body>
     </html>

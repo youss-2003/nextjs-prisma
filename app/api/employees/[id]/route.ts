@@ -39,6 +39,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         salary: body.salary,
         status: body.status,
         notes: body.notes || null,
+        photoUrl: body.photoUrl || null,
       },
     })
     return NextResponse.json(updatedEmployee)

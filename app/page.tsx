@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, UserPlus, DollarSign, TrendingUp } from "lucide-react"
+import { Users, UserPlus, DollarSign, TrendingUp, Plus } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -68,7 +68,10 @@ export default async function Dashboard() {
             <p className="text-sm text-muted-foreground">Welcome back! Here's what's happening.</p>
           </div>
           <Button asChild>
-            <Link href="/employees/new">Add Employee</Link>
+            <Link href="/employees/add">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Employee
+            </Link>
           </Button>
         </div>
       </header>

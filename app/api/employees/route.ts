@@ -16,7 +16,6 @@ export async function GET(request: Request) {
             OR: [
               { firstName: { contains: query } },
               { lastName: { contains: query } },
-              { email: { contains: query } },
             ],
           },
           department ? { department: { equals: department } } : {},

@@ -11,6 +11,9 @@ import { Search, Plus, Edit, Eye, LoaderPinwheel } from "lucide-react"
 import Link from "next/link"
 import { DeleteEmployeeButton } from "@/AppComponents/DeleteEmployee"
 import { Employees } from "../types/types"
+
+
+
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employees[]>([])
   const [searchTerm, setSearchTerm] = useState("")

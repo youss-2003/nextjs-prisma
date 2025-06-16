@@ -10,6 +10,7 @@ export interface Employees  {
     salary: number;
     hiredAt: Date;
     status: string;
+    notes: string | null;
     photoUrl: string | null;
     updatedAt: Date;
   };

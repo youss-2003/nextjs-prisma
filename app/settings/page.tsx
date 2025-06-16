@@ -2,9 +2,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Settings, Home, Wrench, Clock, ArrowLeft, Cog } from "lucide-react"
+import { Metadata } from "next"
 import Link from "next/link"
 
+export const metadata: Metadata = {
+        title: "Dashboard Settings"
+      }
+
 export default function SettingsPage() {
+    
   return (
     <div className="flex flex-col">
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">

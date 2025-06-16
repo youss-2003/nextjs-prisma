@@ -152,7 +152,7 @@ export default function NewEmployeePage() {
                         type="button"
                         variant="destructive"
                         size="sm"
-                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0 cursor-pointer"
                         onClick={removePhoto}
                       >
                         <X className="w-3 h-3" />
@@ -170,7 +170,7 @@ export default function NewEmployeePage() {
                 {/* File Upload */}
                 <div className="space-y-2">
                   <Label htmlFor="photoFile">Upload Photo</Label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 cursor-not-allowed">
                     <Input
                       id="photoFile"
                       type="file"
