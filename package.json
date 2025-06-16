@@ -12,7 +12,7 @@
     "build": "next build",
     "start": "next start",
     "seed": "prisma db seed",
-    "dbdelete": "prisma db delete",
+    "dbdelete": "tsx datadbdelete/datadelete.ts",
     "lint": "next lint"
   },
   "dependencies": {
