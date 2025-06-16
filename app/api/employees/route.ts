@@ -52,6 +52,7 @@ export async function POST(request: Request) {
         salary: parseFloat(body.salary),
         status: body.status,
         notes: body.notes || null,
+        photoUrl: body.photoUrl || null,
       },
     })
     return NextResponse.json(newEmployee, { status: 201 })

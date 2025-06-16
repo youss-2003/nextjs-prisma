@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { ArrowLeft, LoaderPinwheel, Plus } from "lucide-react"
+import { ArrowLeft, LoaderPinwheel, Plus, User, X } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
@@ -28,6 +28,7 @@ import toast from "react-hot-toast"
 
 export default function NewEmployeePage() {
   const router = useRouter()
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,6 +40,7 @@ export default function NewEmployeePage() {
     salary: "",
     status: "active",
     notes: "",
+    photoUrl: "",
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -77,7 +79,32 @@ export default function NewEmployeePage() {
       setIsLoading(false)
     }
   }
+  const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFormData((prev) => ({ ...prev, photoFile: file, photoUrl: "" }))
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
+  const handlePhotoUrlChange = (url: string) => {
+    handleInputChange("photoUrl", url)
+    setFormData((prev) => ({ ...prev, photoFile: null }))
+    if (url.trim()) {
+      setPhotoPreview(url)
+    } else {
+      setPhotoPreview(null)
+    }
+  }
+
+  const removePhoto = () => {
+    setFormData((prev) => ({ ...prev, photoUrl: "", photoFile: null }))
+    setPhotoPreview(null)
+  }
   return (
     <div className="flex flex-col">
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -106,12 +133,86 @@ export default function NewEmployeePage() {
             <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Photo</CardTitle>
+                <CardDescription>Upload a profile picture or provide a photo URL</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Photo Preview */}
+                {photoPreview && (
+                  <div className="flex items-center justify-center">
+                    <div className="relative">
+                      <img
+                        src={photoPreview || "/placeholder.svg"}
+                        alt="Photo preview"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                        onClick={removePhoto}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {!photoPreview && (
+                  <div className="flex items-center justify-center w-32 h-32 mx-auto bg-gray-100 rounded-full border-2 border-dashed border-gray-300">
+                    <User className="w-12 h-12 text-gray-400" />
+                  </div>
+                )}
+
+                {/* File Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="photoFile">Upload Photo</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="photoFile"
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoFileChange}
+                      className="file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      disabled
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Accepted formats: JPG, PNG, GIF (Max 5MB)</p>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">Or</span>
+                  </div>
+                </div>
+
+                {/* URL Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="photoUrl">Photo URL</Label>
+                  <Input
+                    id="photoUrl"
+                    type="url"
+                    value={formData.photoUrl}
+                    onChange={(e) => handlePhotoUrlChange(e.target.value)}
+                    placeholder="https://example.com/photo.jpg"
+                  />
+                  <p className="text-xs text-muted-foreground">Provide a direct link to an image file</p>
+                </div>
+              </CardContent>
+            </Card>
             {/* Personal Information */}
             <Card>
               <CardHeader>
                 <CardTitle>Personal Information</CardTitle>
                 <CardDescription>Basic employee details</CardDescription>
               </CardHeader>
+              
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
