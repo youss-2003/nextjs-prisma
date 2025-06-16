@@ -124,7 +124,7 @@ export default async function Dashboard() {
                     <Badge variant="secondary">{employee.department || "N/A"}</Badge>
                     <Badge variant="outline">{employee.status}</Badge>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/employees/employee${employee.id}`}>View Details</Link>
+                      <Link href={`/employees/employee/${employee.id}`}>View Details</Link>
                     </Button>
                   </div>
                 </div>

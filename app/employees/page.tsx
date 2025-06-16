@@ -33,7 +33,7 @@ export default function EmployeesPage() {
       }
     }
 
-    // Add debounce to prevent too many requests while typing
+    //debounce to prevent too many requests while typing
     const timer = setTimeout(() => {
       fetchEmployees()
     }, 300)

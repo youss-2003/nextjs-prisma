@@ -40,7 +40,7 @@ export function DeleteEmployeeButton({
       }
 
       toast.success('Employee deleted successfully')
-      router.refresh() // Refresh the page to show updated list
+      router.push("/")
     } catch (error) {
       console.error('Delete error:', error)
       toast.error('Failed to delete employee')
